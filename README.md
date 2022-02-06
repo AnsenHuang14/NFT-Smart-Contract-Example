@@ -13,3 +13,7 @@ npx hardhat node
 node scripts/sample-script.js
 npx hardhat help
 ```
+## Deploy to Rinkeby and see on OpenSea
+```
+npx hardhat run scripts/deploy.js --network rinkeby
+``` 
