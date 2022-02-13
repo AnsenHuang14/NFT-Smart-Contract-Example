@@ -13,7 +13,18 @@ npx hardhat node
 node scripts/sample-script.js
 npx hardhat help
 ```
+
+## Test locally
+```
+npx hardhat run scripts/run.js 
+```
+
 ## Deploy to Rinkeby and see on OpenSea
 ```
 npx hardhat run scripts/deploy.js --network rinkeby
+``` 
+
+## Verify contract on EtherScan 
+```
+npx hardhat verify YOUR_CONTRACT_ADDRESS --network rinkeby 
 ``` 

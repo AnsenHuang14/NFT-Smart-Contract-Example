@@ -4,17 +4,38 @@ pragma solidity ^0.8.0;
 
 // We need some util functions for strings.
 import "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "hardhat/console.sol";
 
 // We need to import the helper functions from the contract that we copy/pasted.
 import { Base64 } from "./libraries/Base64.sol";
 
+contract RandomTextNFT is ERC721URIStorage, Pausable, Ownable {
 
-contract MyEpicNFT is ERC721URIStorage {
   using Counters for Counters.Counter;
+
   Counters.Counter private _tokenIds;
+
+  constructor() ERC721("RandomTextNFT", "RTNFT") {
+    console.log("RandomTextNFT contract deployed");
+  }
+
+  function _burn(uint256 tokenId) internal override(ERC721URIStorage) {
+    super._burn(tokenId);
+  }
+
+  function pause() public onlyOwner {
+    _pause();
+    }
+
+  function unpause() public onlyOwner {
+    _unpause();
+  }
 
   // This is our SVG code. All we need to change is the word that's displayed. Everything else stays the same.
   // So, we make a baseSvg variable here that all our NFTs can use.
@@ -32,10 +53,6 @@ contract MyEpicNFT is ERC721URIStorage {
   string[] colors = ["red", "#08C2A8", "black", "yellow", "blue", "green"];
 
   event NewEpicNFTMinted(address sender, uint256 tokenId);
-
-  constructor() ERC721 ("SquareNFT", "SQUARE") {
-    console.log("This is my NFT contract. Woah!");
-  }
 
   function pickRandomFirstWord(uint256 tokenId) public view returns (string memory) {
     uint256 rand = random(string(abi.encodePacked("FIRST_WORD", Strings.toString(tokenId))));
@@ -116,7 +133,6 @@ contract MyEpicNFT is ERC721URIStorage {
 
     _safeMint(msg.sender, newItemId);
     
-    // Update your URI!!!
     _setTokenURI(newItemId, finalTokenUri);
   
     _tokenIds.increment();
