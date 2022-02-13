@@ -21,8 +21,16 @@ contract RandomTextNFT is ERC721URIStorage, Pausable, Ownable {
 
   Counters.Counter private _tokenIds;
 
+  uint256 public maxSupply = 50;
+
+  uint256 public totalSupply = 0;
+
+  uint256 public mintPrice = 0.001 ether;
+
   constructor() ERC721("RandomTextNFT", "RTNFT") {
     console.log("RandomTextNFT contract deployed");
+    console.log("Contract owner", owner());
+
   }
 
   function _burn(uint256 tokenId) internal override(ERC721URIStorage) {
@@ -31,7 +39,7 @@ contract RandomTextNFT is ERC721URIStorage, Pausable, Ownable {
 
   function pause() public onlyOwner {
     _pause();
-    }
+  }
 
   function unpause() public onlyOwner {
     _unpause();
@@ -83,7 +91,18 @@ contract RandomTextNFT is ERC721URIStorage, Pausable, Ownable {
       return uint256(keccak256(abi.encodePacked(input)));
   }
 
-  function makeAnEpicNFT() public {
+  function withdraw() public onlyOwner {
+    require(
+      payable(owner()).send(address(this).balance),
+      "Withdraw failed"
+    );
+  }
+
+  function makeAnEpicNFT() public whenNotPaused payable {
+    require(totalSupply < maxSupply);
+    require(msg.value == mintPrice, "Mint price is 0.001 ETH");
+    console.log(msg.value);
+
     uint256 newItemId = _tokenIds.current();
 
     string memory first = pickRandomFirstWord(newItemId);
@@ -118,24 +137,24 @@ contract RandomTextNFT is ERC721URIStorage, Pausable, Ownable {
         abi.encodePacked("data:application/json;base64,", json)
     );
 
-    console.log("\n--------------------");
-    console.log(finalTokenUri);
-    console.log("\n--------------------");
-    console.log(
-    string(
-        abi.encodePacked(
-            "https://nftpreview.0xdev.codes/?code=",
-            finalTokenUri
-        )
-    )
-);
-    console.log("--------------------\n");
+    // console.log("\n--------------------");
+    // console.log(finalTokenUri);
+    // console.log("\n--------------------");
+    // console.log(
+    // string(
+    //     abi.encodePacked(
+    //         "https://nftpreview.0xdev.codes/?code=",
+    //         finalTokenUri
+    //     )
+    // ));
+    // console.log("--------------------\n");
 
     _safeMint(msg.sender, newItemId);
     
     _setTokenURI(newItemId, finalTokenUri);
   
     _tokenIds.increment();
+    totalSupply += 1;
     console.log("An NFT w/ ID %s has been minted to %s", newItemId, msg.sender);
     emit NewEpicNFTMinted(msg.sender, newItemId);
   }
