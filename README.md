@@ -16,6 +16,11 @@ npx hardhat help
 
 ## Test locally
 ```
+// Run local node on terminal 
+npx hardhat node
+// Open another terminal 
+cmd + N 
+// Run local deploy case 
 npx hardhat run scripts/run.js 
 ```
 

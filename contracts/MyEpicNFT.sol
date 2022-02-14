@@ -101,7 +101,6 @@ contract RandomTextNFT is ERC721URIStorage, Pausable, Ownable {
   function makeAnEpicNFT() public whenNotPaused payable {
     require(totalSupply < maxSupply);
     require(msg.value == mintPrice, "Mint price is 0.001 ETH");
-    console.log(msg.value);
 
     uint256 newItemId = _tokenIds.current();
 
